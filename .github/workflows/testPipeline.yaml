@@ -9,7 +9,6 @@ on:
       - feature/*
       - develop
       - master
-concurrency: docker-np-shd
 
 jobs:
   autoTag:
@@ -33,7 +32,7 @@ jobs:
   docker:
     name: Build Docker Images
     needs: [autoTag]
-    runs-on: vnet-runners-01
+    runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
