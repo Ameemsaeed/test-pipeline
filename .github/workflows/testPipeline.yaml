@@ -52,22 +52,18 @@ jobs:
 
   deploy-do:
     if: startsWith(github.ref, 'refs/heads/feature/')
-    name: 'Deploy to do Environment'
+    name: 'Deploy to DO Environment'
     runs-on: ubuntu-latest
     environment: do
-    needs: [docker]
+    needs: docker
     steps:
-      - name: Waiting for approval
-        uses: trstringer/manual-approval@v1
+      - name: Manual Approval
+        uses: hmarr/auto-approve-action@v2
         with:
           timeout-minutes: 30
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Sync argocd application to current version
-        run: |
-          echo "sync do"
+
+      - name: Sync ArgoCD Application
+        run: echo "sync do"
 
   deploy-dev:
     if: github.ref == 'refs/heads/develop'
@@ -76,8 +72,8 @@ jobs:
     environment: test
     needs: [docker]
     steps:
-      - name: Waiting for approval
-        uses: trstringer/manual-approval@v1
+      - name: Manual Approval
+        uses: hmarr/auto-approve-action@v2
         with:
           timeout-minutes: 30
       - name: Checkout
