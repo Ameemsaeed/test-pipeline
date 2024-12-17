@@ -50,10 +50,7 @@ jobs:
           echo "docker push ${{ vars.service_name }}:${{ needs.autoTag.outputs.version }}"
 
   deploy-do:
-    if: |
-      startsWith(github.ref, 'refs/heads/feature/') ||
-      github.ref == 'refs/heads/develop' ||
-      github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request'
     name: 'Deploy to do Environment'
     runs-on: ubuntu-latest
     environment: do
