@@ -57,11 +57,6 @@ jobs:
     environment: do
     needs: docker
     steps:
-      - name: Manual Approval
-        uses: trstringer/manual-approval@v1
-        with:
-          timeout-minutes: 30
-
       - name: Sync ArgoCD Application
         run: echo "sync do"
 
