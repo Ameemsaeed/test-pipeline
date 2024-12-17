@@ -62,7 +62,9 @@ jobs:
         run: echo "sync do"
 
   deploy-dev:
-    if: github.ref == 'refs/heads/develop'
+    if: |
+      github.ref == 'refs/heads/develop' ||
+      github.event_name == 'pull_request'
     name: 'Deploy to dev Environment'
     runs-on: ubuntu-latest
     environment: dev
