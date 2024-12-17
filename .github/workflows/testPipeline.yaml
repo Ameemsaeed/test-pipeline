@@ -109,3 +109,4 @@ jobs:
       - name: Sync argocd application to current version
         run: |
           echo "manual sync prod"
+
