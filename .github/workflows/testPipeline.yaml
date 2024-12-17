@@ -50,7 +50,9 @@ jobs:
           echo "docker push ${{ vars.service_name }}:${{ needs.autoTag.outputs.version }}"
 
   deploy-do:
-    if: github.event_name == 'pull_request'
+    if: |
+      github.ref == 'refs/heads/develop' ||
+      github.event_name == 'pull_request'
     name: 'Deploy to do Environment'
     runs-on: ubuntu-latest
     environment: do
@@ -79,7 +81,7 @@ jobs:
     name: 'Deploy to test Environment'
     runs-on: ubuntu-latest
     environment: test
-    needs: [docker]
+    needs: [docker,deploy-dev]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
