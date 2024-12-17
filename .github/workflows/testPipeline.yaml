@@ -51,13 +51,13 @@ jobs:
 
   deploy-do:
     if: startsWith(github.ref, 'refs/heads/feature/') || github.ref == 'refs/heads/develop'
-    name: 'Deploy to dev Environment'
+    name: 'Deploy to do Environment'
     runs-on: ubuntu-latest
-    environment: dev
+    environment: do
     needs: docker
     steps:
       - name: Sync ArgoCD Application
-        run: echo "sync dev"
+        run: echo "sync do"
 
   deploy-dev:
     if: github.ref == 'refs/heads/develop'
