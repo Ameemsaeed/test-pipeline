@@ -58,7 +58,7 @@ jobs:
     needs: docker
     steps:
       - name: Manual Approval
-        uses: hmarr/auto-approve-action@v2
+        uses: trstringer/manual-approval@v1
         with:
           timeout-minutes: 30
 
@@ -72,10 +72,6 @@ jobs:
     environment: test
     needs: [docker]
     steps:
-      - name: Manual Approval
-        uses: hmarr/auto-approve-action@v2
-        with:
-          timeout-minutes: 30
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -91,10 +87,6 @@ jobs:
     environment: sit
     needs: [docker]
     steps:
-      - name: Waiting for approval
-        uses: trstringer/manual-approval@v1
-        with:
-          timeout-minutes: 30
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -110,10 +102,6 @@ jobs:
     environment: e2e
     needs: [docker]
     steps:
-      - name: Waiting for approval
-        uses: trstringer/manual-approval@v1
-        with:
-          timeout-minutes: 30
       - name: Checkout
         uses: actions/checkout@v3
         with:
