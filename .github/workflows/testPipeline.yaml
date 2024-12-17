@@ -45,27 +45,26 @@ jobs:
         run: |
           echo "docker build -t my image ${{ vars.service_name }}:${{ needs.autoTag.outputs.version }}"
 
-
       - name: Push docker image
         run: |
           echo "docker push ${{ vars.service_name }}:${{ needs.autoTag.outputs.version }}"
 
-  deploy-do:
+  deploy-dev:
     if: startsWith(github.ref, 'refs/heads/feature/')
-    name: 'Deploy to DO Environment'
+    name: 'Deploy to dev Environment'
     runs-on: ubuntu-latest
-    environment: do
+    environment: dev
     needs: docker
     steps:
       - name: Sync ArgoCD Application
-        run: echo "sync do"
+        run: echo "sync dev"
 
-  deploy-dev:
+  deploy-test:
     if: github.ref == 'refs/heads/develop'
-    name: 'Deploy to dev Environment'
+    name: 'Deploy to test Environment'
     runs-on: ubuntu-latest
     environment: test
-    needs: [docker]
+    needs: [docker,deploy-dev]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -73,29 +72,14 @@ jobs:
           fetch-depth: 0
       - name: Sync argocd application to current version
         run: |
-          echo "sync dev"
-
-  deploy-sit:
-    if: github.ref == 'refs/heads/master'
-    name: 'Deploy to sit Environment'
-    runs-on: ubuntu-latest
-    environment: sit
-    needs: [docker]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Sync argocd application to current version
-        run: |
-          echo "sync sit"
+          echo "sync test"
 
   deploy-prod:
     if: github.ref == 'refs/heads/master'
-    name: 'Deploy to e2e Environment'
+    name: 'Deploy to prod Environment'
     runs-on: ubuntu-latest
-    environment: e2e
-    needs: [docker]
+    environment: prod
+    needs: [docker,deploy-test]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
