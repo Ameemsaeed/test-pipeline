@@ -64,6 +64,21 @@ jobs:
     name: 'Deploy to test Environment'
     runs-on: ubuntu-latest
     environment: test
+    needs: [docker,deploy-dev]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Sync argocd application to current version
+        run: |
+          echo "sync test"
+
+  deploy-preProd:
+    if: github.ref == 'refs/heads/develop'
+    name: 'Deploy to preProd Environment'
+    runs-on: ubuntu-latest
+    environment: preProd
     needs: [docker]
     steps:
       - name: Checkout
