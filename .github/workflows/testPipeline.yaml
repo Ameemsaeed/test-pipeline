@@ -50,54 +50,47 @@ jobs:
           echo "docker push ${{ vars.service_name }}:${{ needs.autoTag.outputs.version }}"
 
   deploy-do:
-    if: |
-      github.ref == 'refs/heads/develop' ||
-      github.ref == 'refs/heads/master' ||
-      github.event_name == 'pull_request'
-    name: 'Deploy to do Environment'
+    name: 'Deploy to DO Environment'
     runs-on: ubuntu-latest
     environment: do
     needs: docker
     steps:
       - name: Sync ArgoCD Application
-        run: echo "sync do"
+        run: echo "auto sync do"
 
   deploy-dev:
     if: |
       github.ref == 'refs/heads/develop' ||
-      github.ref == 'refs/heads/master' ||
-      github.event_name == 'pull_request'
-    name: 'Deploy to dev Environment'
+      (github.event_name == 'pull_request' && github.base_ref == 'master')
+    name: 'Deploy to Dev Environment'
     runs-on: ubuntu-latest
     environment: dev
-    needs: [docker,deploy-do]
+    needs: [docker, deploy-do]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Sync argocd application to current version
-        run: |
-          echo "sync test"
+      - name: Sync ArgoCD Application to current version
+        run: echo "auto sync dev"
 
   deploy-test:
     if: github.ref == 'refs/heads/master'
-    name: 'Deploy to test Environment'
+    name: 'Deploy to Test Environment'
     runs-on: ubuntu-latest
     environment: test
-    needs: [docker,deploy-dev]
+    needs: [docker, deploy-dev]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Sync argocd application to current version
-        run: |
-          echo "manual sync prod"
+      - name: Sync ArgoCD Application to current version
+        run: echo "auto sync test"
 
   deploy-prod:
     if: github.ref == 'refs/heads/master'
-    name: 'Deploy to prod Environment'
+    name: 'Deploy to Prod Environment'
     runs-on: ubuntu-latest
     environment: prod
     needs: [deploy-test]
@@ -106,7 +99,5 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Sync argocd application to current version
-        run: |
-          echo "manual sync prod"
-
+      - name: Sync ArgoCD Application to current version
+        run: echo "manual sync prod"
