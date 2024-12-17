@@ -45,32 +45,30 @@ jobs:
         run: |
           echo "docker build -t my image ${{ vars.service_name }}:${{ needs.autoTag.outputs.version }}"
 
-
       - name: Push docker image
         run: |
           echo "docker push ${{ vars.service_name }}:${{ needs.autoTag.outputs.version }}"
 
   deploy-do:
-    if: startsWith(github.ref, 'refs/heads/feature/')
-    name: 'Deploy to DO Environment'
+    if: |
+      github.ref == 'refs/heads/develop' ||
+      github.event_name == 'pull_request'
+    name: 'Deploy to do Environment'
     runs-on: ubuntu-latest
     environment: do
     needs: docker
     steps:
-      - name: Manual Approval
-        uses: trstringer/manual-approval@v1
-        with:
-          timeout-minutes: 30
-
       - name: Sync ArgoCD Application
         run: echo "sync do"
 
   deploy-dev:
-    if: github.ref == 'refs/heads/develop'
+    if: |
+      github.ref == 'refs/heads/develop' ||
+      github.event_name == 'pull_request'
     name: 'Deploy to dev Environment'
     runs-on: ubuntu-latest
-    environment: test
-    needs: [docker]
+    environment: dev
+    needs: [docker,deploy-do]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -78,14 +76,14 @@ jobs:
           fetch-depth: 0
       - name: Sync argocd application to current version
         run: |
-          echo "sync dev"
+          echo "sync test"
 
-  deploy-sit:
+  deploy-test:
     if: github.ref == 'refs/heads/master'
-    name: 'Deploy to sit Environment'
+    name: 'Deploy to test Environment'
     runs-on: ubuntu-latest
-    environment: sit
-    needs: [docker]
+    environment: test
+    needs: [docker,deploy-dev]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -93,14 +91,14 @@ jobs:
           fetch-depth: 0
       - name: Sync argocd application to current version
         run: |
-          echo "sync sit"
+          echo "manual sync prod"
 
   deploy-prod:
     if: github.ref == 'refs/heads/master'
-    name: 'Deploy to e2e Environment'
+    name: 'Deploy to prod Environment'
     runs-on: ubuntu-latest
-    environment: e2e
-    needs: [docker]
+    environment: prod
+    needs: [deploy-test]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
