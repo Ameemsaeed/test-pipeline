@@ -49,8 +49,8 @@ jobs:
         run: |
           echo "docker push ${{ vars.service_name }}:${{ needs.autoTag.outputs.version }}"
 
-  deploy-dev:
-    if: startsWith(github.ref, 'refs/heads/feature/')
+  deploy-do:
+    if: startsWith(github.ref, 'refs/heads/feature/') || github.ref == 'refs/heads/develop'
     name: 'Deploy to dev Environment'
     runs-on: ubuntu-latest
     environment: dev
@@ -59,12 +59,12 @@ jobs:
       - name: Sync ArgoCD Application
         run: echo "sync dev"
 
-  deploy-test:
+  deploy-dev:
     if: github.ref == 'refs/heads/develop'
-    name: 'Deploy to test Environment'
+    name: 'Deploy to dev Environment'
     runs-on: ubuntu-latest
-    environment: test
-    needs: [docker,deploy-dev]
+    environment: dev
+    needs: [docker,deploy-do]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -74,11 +74,11 @@ jobs:
         run: |
           echo "sync test"
 
-  deploy-preProd:
-    if: github.ref == 'refs/heads/develop'
-    name: 'Deploy to preProd Environment'
+  deploy-test:
+    if: github.ref == 'refs/heads/master'
+    name: 'Deploy to test Environment'
     runs-on: ubuntu-latest
-    environment: preProd
+    environment: test
     needs: [docker]
     steps:
       - name: Checkout
@@ -87,7 +87,7 @@ jobs:
           fetch-depth: 0
       - name: Sync argocd application to current version
         run: |
-          echo "sync test"
+          echo "manual sync prod"
 
   deploy-prod:
     if: github.ref == 'refs/heads/master'
