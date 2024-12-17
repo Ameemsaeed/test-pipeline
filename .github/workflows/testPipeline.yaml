@@ -81,6 +81,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: sit
     needs: [docker]
+    needs: [deploy-dev]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
