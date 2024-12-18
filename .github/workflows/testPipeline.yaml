@@ -43,11 +43,11 @@ jobs:
 
       - name: Build docker image
         run: |
-          echo -e "docker build -t containerRegistry/${{ vars.service_name }}:${{ needs.autoTag.outputs.version }}"
+          echo -e "docker build -t containerRegistry/${{ vars.SERVICE_NAME }}:${{ needs.autoTag.outputs.version }}"
 
       - name: Push docker image
         run: |
-          echo -e "docker push containerRegistry/${{ vars.service_name }}:${{ needs.autoTag.outputs.version }}"
+          echo -e "docker push containerRegistry/${{ vars.SERVICE_NAME }}:${{ needs.autoTag.outputs.version }}"
 
   deploy-do:
     name: 'Deploy to DO Environment'
@@ -57,7 +57,7 @@ jobs:
     steps:
       - name: Sync ArgoCD Application
         run: |
-          APPLICATION_NAME="my-app-${{ vars.service_name }}"
+          APPLICATION_NAME="my-app-${{ vars.SERVICE_NAME }}"
           GIT_BRANCH="${{ github.ref }}"
           echo -e 'https://agoServer/api/v1/applications/{name}/sync'
           echo $GIT_BRANCH
