@@ -57,7 +57,7 @@ jobs:
     steps:
       - name: Sync ArgoCD Application
         run: |
-          APPLICATION_NAME="my-app-${{ vars.SERVICE_NAME }}"
+          APPLICATION_NAME="${{ vars.TENANT_NAME }}-${{ vars.SERVICE_NAME }}"
           GIT_BRANCH="${{ github.ref_name }}"
           echo -e 'https://agoServer/api/v1/applications/{name}/sync'
           echo $GIT_BRANCH
